@@ -1,0 +1,53 @@
+#doneyet-main {
+//  font-family: consolas;
+  background-color: #e6e6e6;
+  #doneyet-header {
+    height: 40px;
+  }
+
+  #doneyet-left {
+    width: 400px;
+    border-right: 1px solid #e6e6e6;
+
+    button {
+      border: none;
+    }
+  }
+
+  md-button {
+    a:visited {
+      color: none;
+    }
+  }
+
+  .doneyet-content {
+    height: 100%;
+    width: 100%;
+    margin: 6px 20px 20px;
+
+    md-content {
+      md-card {
+        .main-card {
+        }
+      }
+      
+      md-input-container {
+        margin-bottom: 0;
+      }
+      .form-separator {
+        margin-top: 20px;
+      }
+      .timer-alerts-section {
+        background-color: white;
+        
+        md-switch {
+          margin-top: 0;
+          margin-bottom: 0;
+        }
+
+        md-input-container {
+        }
+      }
+    }
+  }
+}

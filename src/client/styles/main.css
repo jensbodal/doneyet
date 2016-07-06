@@ -1,0 +1,26 @@
+#doneyet-main {
+  background-color: #e6e6e6; }
+  #doneyet-main #doneyet-header {
+    height: 40px; }
+  #doneyet-main #doneyet-left {
+    width: 400px;
+    border-right: 1px solid #e6e6e6; }
+    #doneyet-main #doneyet-left button {
+      border: none; }
+  #doneyet-main md-button a:visited {
+    color: none; }
+  #doneyet-main .doneyet-content {
+    height: 100%;
+    width: 100%;
+    margin: 6px 20px 20px; }
+    #doneyet-main .doneyet-content md-content md-input-container {
+      margin-bottom: 0; }
+    #doneyet-main .doneyet-content md-content .form-separator {
+      margin-top: 20px; }
+    #doneyet-main .doneyet-content md-content .timer-alerts-section {
+      background-color: white; }
+      #doneyet-main .doneyet-content md-content .timer-alerts-section md-switch {
+        margin-top: 0;
+        margin-bottom: 0; }
+
+/*# sourceMappingURL=main.css.map */

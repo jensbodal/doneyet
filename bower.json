@@ -1,0 +1,41 @@
+{
+  "name": "angular_seed",
+  "authors": [
+    "Jens Bodal (jensbodal@gmail.com)"
+  ],
+  "description": "Seed for an Angular app using nodejs, sass, angular material, and John Papa's style guide",
+  "main": "src/client/index.html",
+  "keywords": [
+    "angular",
+    "sass",
+    "material",
+    "john",
+    "papa"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.7",
+    "angular-material": "^1.0.9",
+    "jquery": "^3.0.0",
+    "angular-ui-router": "^0.3.1",
+    "font-awesome": "^4.6.3",
+    "angular-material-datetimepicker": "^1.4.0",
+    "angular-messages": "^1.5.7"
+  },
+  "overrides": {
+    "font-awesome": {
+      "main": [
+        "css/font-awesome.css"
+      ]
+    }
+  }
+}

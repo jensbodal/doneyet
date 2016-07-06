@@ -1,0 +1,31 @@
+<div 
+    flex="100" 
+    id="doneyet-left"
+    layout="column" 
+    ng-cloak=""
+    ng-controller="LeftController as vm"
+    >
+    <md-button 
+        ng-click="vm.goHome()"
+        class="md-raised md-primary"
+        >
+        HOME
+    </md-button>
+    <md-button
+        class="md-raised md-primary"
+        ng-click="vm.addTimer()"
+        >
+        ADD TIMER
+    </md-button>
+    <md-button 
+        aria-label="{{timer.name}}" 
+        class="md-raised" 
+        ng-click="vm.loadTimer(timer)" 
+        ng-repeat="timer in vm.timers"
+        >
+        {{timer.name}}
+        <md-divider></md-divider>
+    </md-button>
+</div>
+
+

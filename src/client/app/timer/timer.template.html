@@ -1,0 +1,159 @@
+<div class="doneyet-timer" flex="100" layout="column" ng-cloak="">
+    <md-content>
+        <md-card layout="column">
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">{{vm.timer.name}}</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <div flex="100">
+                    <form name="vm.timerForm">
+                        <md-input-container class="md-block">
+                            <label> 
+                                Timer Name
+                            </label>
+                            <input 
+                                name="vm.timerForm.name"
+                                ng-model="vm.timer.name" 
+                                ng-disabled="vm.timerFormDisabled" 
+                                ng-required="true" 
+                                type="text"
+                                >
+                            </input>
+                        </md-input-container>
+                        <md-radio-group layout="row" ng-disabled="vm.timerFormDisabled" ng-model="vm.timer.type" ng-required="true">
+                            <md-radio-button class="md-primary" ng-disabled="vm.timerFormDisabled" value="Elapsed">Elapsed</md-radio-button>
+                            <md-radio-button class="md-primary" ng-disabled="vm.timerFormDisabled" value="Countdown">Countdown</md-radio-button>
+                        </md-radio-group>
+                    </div>
+                    <md-divider class="form-separator"></md-divider>
+                    <md-input-container class="md-block" layout="column">
+                        <div flex="">
+                            <md-checkbox class="md-primary" ng-disabled="vm.timerFormDisabled" ng-model="vm.timer.doubleStartMode">
+                                Double Start Mode
+                            </md-checkbox>
+                        </div>
+                        <div flex="">
+                            <md-checkbox class="md-primary" ng-disabled="vm.timerFormDisabled" ng-model="vm.timer.private">
+                                Private
+                            </md-checkbox>
+                        </div>
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Description</label>
+                        <textarea 
+                            md-maxlength="150" 
+                            md-select-on-focus 
+                            ng-disabled="vm.timerFormDisabled"
+                            ng-model="vm.timer.description" 
+                            rows="5" 
+                            >
+                        </textarea>
+                    </md-input-container>
+                    <table class="timer-alerts-section">
+                        <tr align="left">
+                            <th colspan="3"><span class="md-headline">Alerts</span></th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <md-switch class="md-primary" ng-disabled="vm.timerFormDisabled" ng-model="vm.timer.alerts.sms.enabled">
+                                    SMS
+                                </md-switch>
+                            </td>
+                            <td><span ng-show="vm.timer.alerts.sms.enabled">
+                                <md-input-container>
+                                    <label> 
+                                        Phone Number
+                                    </label>
+                                    <input 
+                                        name="vm.timerForm.sms"
+                                        ng-model="vm.timer.alerts.sms.value" 
+                                        ng-pattern="/^[0-9\-\(\)\.]+/"
+                                        ng-required="true"
+                                        type="tel"
+                                        >
+                                    </input>
+                                    <div ng-messages="vm.timerForm.sms.$error">
+                                        <div ng-message="required">This is required!</div>
+                                    </div>
+                                </md-input-container>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <md-switch class="md-primary" ng-disabled="vm.timerFormDisabled" ng-model="vm.timer.alerts.email.enabled">
+                                    Email
+                                </md-switch>
+                            </td>
+                            <td><span ng-show="vm.timer.alerts.email.enabled">
+                                <md-input-container>
+                                    <label> 
+                                        Email Address
+                                    </label>
+                                    <input 
+                                        ng-model="vm.timer.alerts.email.value" 
+                                        ng-pattern="/^.+@.+\..+$/"
+                                        ng-required="true"
+                                        type="email"
+                                        >
+                                    </input>
+                                </md-input-container>
+                            </span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <md-switch class="md-primary" ng-disabled="vm.timerFormDisabled" ng-model="vm.timer.alerts.pushbullet.enabled">
+                                    Pushbullet
+                                </md-switch>
+                            </td>
+                            <td><span ng-show="vm.timer.alerts.pushbullet.enabled">
+                                <md-input-container>
+                                    <label> 
+                                        Pushbullet API Key
+                                    </label>
+                                    <input 
+                                        ng-model="vm.timer.alerts.pushbullet.value" 
+                                        type="text"
+                                        >
+                                    </input>
+                                </md-input-container>
+                            </span></td>
+                        </tr>
+                    </table>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="center center">
+                    <md-button 
+                        class="md-raised md-warn" 
+                        ng-click="vm.timerFormDisabled=false" 
+                        ng-show="vm.timerFormDisabled"
+                        >
+                        EDIT
+                    </md-button>
+                    <md-button 
+                        class="md-raised md-warn" 
+                        ng-click="vm.timerFormDisabled=true" 
+                        ng-show="!vm.timerFormDisabled"
+                        >
+                        CANCEL
+                    </md-button>
+                    <md-button 
+                        class="md-raised md-primary" 
+                        ng-click="vm.saveTimer()" 
+                        ng-disabled="vm.checkFormErrors(vm.timerForm)"
+                        ng-show="!vm.timerFormDisabled"
+                        >
+                        SAVE
+                    </md-button>
+                    <md-button
+                        class="md-raised md-warn"
+                        ng-click="vm.deleteTimer()"
+                        ng-show="!vm.timerFormDisabled && vm.timer._id"
+                        >
+                        DELETE
+                    </md-button>
+                </md-card-actions>
+            </form>
+        </md-card>
+    </md-content>
+</div>
