@@ -1,6 +1,6 @@
 {
-  "logfile": "~/.forever/doneyet-dev",
+  "logfile" : "~/.forever/doneyet-dev",
   "port" : 7654,
-  "server": "src/server/app.js"
+  "server" : "src/server/app.js"
 }
 
