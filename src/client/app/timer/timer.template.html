@@ -68,6 +68,7 @@
                                     </label>
                                     <input 
                                         name="vm.timerForm.sms"
+                                        ng-disabled="vm.timerFormDisabled" 
                                         ng-model="vm.timer.alerts.sms.value" 
                                         ng-pattern="/^[0-9\-\(\)\.]+/"
                                         ng-required="true"
@@ -92,6 +93,7 @@
                                         Email Address
                                     </label>
                                     <input 
+                                        ng-disabled="vm.timerFormDisabled" 
                                         ng-model="vm.timer.alerts.email.value" 
                                         ng-pattern="/^.+@.+\..+$/"
                                         ng-required="true"
@@ -113,6 +115,7 @@
                                         Pushbullet API Key
                                     </label>
                                     <input 
+                                        ng-disabled="vm.timerFormDisabled" 
                                         ng-model="vm.timer.alerts.pushbullet.value" 
                                         type="text"
                                         >
