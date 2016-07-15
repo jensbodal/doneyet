@@ -28,9 +28,8 @@ router.get('/timer', function(req, res, next) {
 });
 
 /* GET a specific timer by _id */
-router.get('/timer/:oid', function(req, res, next) {
+router.get('/timers/:oid', function(req, res, next) {
   var oid = new ObjectId(req.params.oid);
-  console.log(req.params);
   app.dbo.collection('timers').findOne(
     {'_id':oid}, 
     function(err, result) {
@@ -46,6 +45,7 @@ router.get('/timer/:oid', function(req, res, next) {
 
 /* GET all timers */
 router.get('/timers', function(req, res, next) {
+  console.log(req.headers.authorization);
   var id = req.params.id;
   var something = app.dbo.collection('timers').find()
     .toArray(function(err, result) {

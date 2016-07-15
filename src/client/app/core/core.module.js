@@ -6,6 +6,7 @@
       'ngMaterial',
       'ngMaterialDatePicker',
       'ngMessages',
+      'ngStorage',
       'ui.router'
     ]);
 })();

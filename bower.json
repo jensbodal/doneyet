@@ -29,7 +29,8 @@
     "angular-ui-router": "^0.3.1",
     "font-awesome": "^4.6.3",
     "angular-material-datetimepicker": "^1.4.0",
-    "angular-messages": "^1.5.7"
+    "angular-messages": "^1.5.7",
+    "ngstorage": "^0.3.10"
   },
   "overrides": {
     "font-awesome": {

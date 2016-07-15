@@ -12,10 +12,15 @@
   function HeaderController($state) {
     var vm = this;
     vm.homeButtonClick = homeButtonClick;
+    vm.logout = logout;
     vm.pageTitle = 'Dynamic Page Title';
 
     function homeButtonClick() {
       $state.go('doneyet.home');
+    }
+
+    function logout() {
+      $state.go('logout');
     }
   }
 

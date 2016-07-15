@@ -9,6 +9,7 @@
       'doneyet.home',
       'doneyet.layout',
       'doneyet.left',
+      'login',
       'doneyet.shared',
       'doneyet.timer'
     ]
