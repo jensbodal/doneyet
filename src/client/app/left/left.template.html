@@ -1,31 +1,35 @@
-<div 
-    flex="100" 
-    id="doneyet-left"
-    layout="column" 
-    ng-cloak=""
-    ng-controller="LeftController as vm"
-    >
-    <md-button 
-        ng-click="vm.goHome()"
-        class="md-raised md-primary"
+<div flex="100" layout="column" layout-align="center stretch" layout-fill="" ng-cloak ng-controller="LeftController as vm">
+    <md-sidenav
+        class="md-sidenav-left"
+        layout="column"
+        md-component-id="left"
+        md-is-open="vm.test"
+        md-is-locked-open="vm.navOpen()"
+        md-whiteframe="4"
         >
-        HOME
-    </md-button>
-    <md-button
-        class="md-raised md-primary"
-        ng-click="vm.addTimer()"
-        >
-        ADD TIMER
-    </md-button>
-    <md-button 
-        aria-label="{{timer.name}}" 
-        class="md-raised" 
-        ng-click="vm.loadTimer(timer)" 
-        ng-repeat="timer in vm.timers"
-        >
-        {{timer.name}}
-        <md-divider></md-divider>
-    </md-button>
+        <md-button 
+            ng-click="vm.goHome()"
+            class="md-raised md-primary"
+            >
+            HOME
+        </md-button>
+        <md-button
+            class="md-raised md-primary"
+            ng-click="vm.addTimer()"
+            >
+            ADD TIMER
+        </md-button>
+        <md-button 
+            aria-label="{{timer.name}}" 
+            class="md-raised" 
+            ng-click="vm.loadTimer(timer)" 
+            ng-repeat="timer in vm.timers"
+            >
+            {{timer.name}}
+            <md-divider></md-divider>
+        </md-button>
+    </md-sidenav>
+    <md-content layout-padding show-sm hide-gt-sm ng-click="vm.test = !vm.test">
+        MENU
+    </md-content>
 </div>
-
-

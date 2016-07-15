@@ -8,10 +8,12 @@
   LeftController.$inject = [
     '$state',
     'TimerService',
+    '$mdMedia',
+    '$mdSidenav',
     '$scope'
   ];
 
-  function LeftController($state, TimerService, $scope) {
+  function LeftController($state, TimerService, $mdMedia, $mdSidenav, $scope) {
     var vm = this;
     vm.addTimer = addTimer;
     vm.loadTimer = loadTimer;
@@ -20,6 +22,11 @@
     vm.getTimers = getTimers();
     vm.goHome = goHome;
     vm.timers = [];
+    vm.navOpen = navOpen;
+
+    function navOpen(openStatus) {
+      return $mdMedia('gt-sm');
+    }
   
     $scope.$watch(TimerService.getTimers, function() {
       vm.timers = TimerService.getTimers();
@@ -30,6 +37,9 @@
     });
  
     function addTimer() {
+      if (!navOpen()) {
+        vm.test = false;
+      }
       $state.go('doneyet.timer', {timer: null});
     }
 
@@ -38,6 +48,9 @@
     }
 
     function loadTimer(timer) {
+      if (!navOpen()) {
+        vm.test = false;
+      }
       $state.go('doneyet.timer', {timer: timer});
     }
 

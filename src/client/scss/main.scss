@@ -1,14 +1,14 @@
 #doneyet-main {
+  min-height: 100%;
 //  font-family: consolas;
-  background-color: #e6e6e6;
+  background-color: #F5F5F5;
   #doneyet-header {
     height: 40px;
   }
 
   #doneyet-left {
-    width: 400px;
     border-right: 1px solid #e6e6e6;
-
+    min-height: 100%;
     button {
       border: none;
     }
