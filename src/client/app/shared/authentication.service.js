@@ -20,18 +20,38 @@
     return service;
 
     function login(username, callback) {
-      // store login state in service
-      service.loggedIn = true;
+      var config = {
+        username: username
+      };
       
-      // store username and token so that user remains logged in between page refreshes
-      console.log("ME: " + username);
-      $localStorage.authenticatedUser = { username: username, token: username};
+      return $http.post('/api/users', config).then(function success(response) {
+        // store login state in service
+        service.loggedIn = true;
+        
+        var user = response.data.user;
+        var token = response.data.token;
+        var promiseResponse = {
+          user: user,
+          token: token
+        };
+        // store username and token so that user remains logged in between page refreshes
+        $localStorage.authenticatedUser = user.username;
+        $localStorage.token = token;
 
-      // add auth token to header for all requests made by the $http service
-      $http.defaults.headers.common.Authorization = username;
-      
-      // indicate successful login
-      return callback(true);
+        // add auth token to header for all requests made by the $http service
+        $http.defaults.headers.common.Authorization = $localStorage.authenticatedUser;
+        $http.defaults.headers.common.Token = $localStorage.token;
+        
+        // indicate successful login
+        console.log("YOOO");
+        console.log(response.data);
+        console.log(promiseResponse);
+        return (promiseResponse);
+      }, function error(response) {
+        console.log("ERROR: " + response);
+        return response;
+      });
+
     }
 
 

@@ -57,9 +57,9 @@
 
     function run($rootScope, $http, $location, $localStorage) {
       if ($localStorage.authenticatedUser) {
-        $http.defaults.headers.common.Authorization = $localStorage.authenticatedUser.token;
+        $http.defaults.headers.common.Authorization = $localStorage.authenticatedUser;
+        $http.defaults.headers.common.Token = $localStorage.token;
       }
-
       // redirect to login page if not authenticated
       $rootScope.$on('$locationChangeStart', function(event, next, current) {
         // array of pages that can be loaded without authentication

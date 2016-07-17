@@ -19,13 +19,16 @@
     vm.logout = logout;
 
     function login() {
-      console.log("CONTR: " + vm.email);
-      AuthenticationService.login(vm.email, function(authenticated, res) {
-        console.log(authenticated);
-        if (authenticated) {
-          $location.path('/');
-        }
-      });
+      console.log("Login Controller: " + vm.email);
+      AuthenticationService.login(vm.email)
+        .then(function success(response) {
+          console.log('Login ctrl auth %o', response);
+          if (response) {
+            $location.path('/');
+          }
+        }, function error(response) {
+          console.log("ERROR: " + response); 
+        });
     }
 
     function logout() {

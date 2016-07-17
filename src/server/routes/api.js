@@ -13,6 +13,7 @@ router.get('/', function(req, res, next) {
 
 /* GET a specific timer by oid */
 router.get('/timer', function(req, res, next) {
+  console.log('[/timer/what?] ' + req.headers.authorization);
   var oid = new ObjectId(req.query.oid);
   app.dbo.collection('timers').findOne(
     {'_id':oid}, 
@@ -29,6 +30,7 @@ router.get('/timer', function(req, res, next) {
 
 /* GET a specific timer by _id */
 router.get('/timers/:oid', function(req, res, next) {
+  console.log('[/timers/:oid] ' + req.headers.authorization);
   var oid = new ObjectId(req.params.oid);
   app.dbo.collection('timers').findOne(
     {'_id':oid}, 
@@ -45,7 +47,6 @@ router.get('/timers/:oid', function(req, res, next) {
 
 /* GET all timers */
 router.get('/timers', function(req, res, next) {
-  console.log(req.headers.authorization);
   var id = req.params.id;
   var something = app.dbo.collection('timers').find()
     .toArray(function(err, result) {
@@ -61,7 +62,11 @@ router.get('/timers', function(req, res, next) {
 
 /* POST add new timer */
 router.post('/timers', function(req, res) {
+  console.log('[/timers] POST ' + req.headers);
+  var auth = req.headers.authorization;
+  // currently auth is just the username, should be a jwt token or something else
   var timer = req.body;
+
   if (validateTimer(timer)) {
     app.dbo.collection('timers').insertOne(
       timer, 
@@ -82,6 +87,7 @@ router.post('/timers', function(req, res) {
 
 /* DELETE an existing timer */
 router.delete('/timers/:oid', function(req, res) {
+  console.log('[/timers/:oid] DEL ' + req.headers.authorization);
   var oid = new ObjectId(req.params.oid);
   app.dbo.collection('timers')
   .removeOne({'_id': oid})
@@ -95,6 +101,7 @@ router.delete('/timers/:oid', function(req, res) {
 
 /* PUT an existing timer */
 router.put('/timers', function(req, res) {
+  console.log('[/timers] PUT ' + req.headers.authorization);
   var timer = req.body;
   var oid = new ObjectId(timer._id);
   delete timer._id; // cannot reinsert same ID so need to remove this from our insert object
@@ -123,5 +130,49 @@ router.put('/timers', function(req, res) {
 function validateTimer(timer) {
   return true;
 }
+
+function validateUser(user) {
+  return true;
+}
+
+/* POST register/login user */
+router.post('/users', function(req, res) {
+  var user = req.body;
+  if (validateUser(user)) {
+    var username = user.username;
+
+    app.dbo.collection('users').findOne({username: username}, function(err, result) {
+      // user doesn't exist
+      if (err === null && result === null) {
+        app.dbo.collection('users').insertOne({username: username}, function (err, result) {
+          console.log("Created user: " + username);
+          var newUser = {
+            _id: result.insertedId,
+            username: username
+          };
+
+          res.status(200).send(
+            {
+              user: newUser,
+              token: 'NOT_IMPLEMENTED'
+            }
+          );
+        });
+      }
+      // user exists so don't create one
+      else {
+          res.status(200).send(
+            {
+              user: result,
+              token: 'NOT_IMPLEMENTED'
+            }
+          );
+      }
+    });
+  }
+  else {
+    res.status(400).send({ error: 'Invalid Timer Object', 'data':username });    
+  }
+});
 
 module.exports = router;

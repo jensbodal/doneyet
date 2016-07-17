@@ -25,7 +25,7 @@
     vm.navOpen = navOpen;
 
     function navOpen(openStatus) {
-      return $mdMedia('gt-sm');
+      return $mdMedia('gt-xs');
     }
   
     $scope.$watch(TimerService.getTimers, function() {
