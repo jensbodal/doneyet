@@ -36,16 +36,15 @@
         };
         // store username and token so that user remains logged in between page refreshes
         $localStorage.authenticatedUser = user.username;
+        $localStorage.uuid = user._id;
         $localStorage.token = token;
 
         // add auth token to header for all requests made by the $http service
-        $http.defaults.headers.common.Authorization = $localStorage.authenticatedUser;
-        $http.defaults.headers.common.Token = $localStorage.token;
+        $http.defaults.headers.common.token = $localStorage.token;
+        $http.defaults.headers.common.username = $localStorage.authenticatedUser;
+        $http.defaults.headers.common.uuid = $localStorage.uuid;
         
         // indicate successful login
-        console.log("YOOO");
-        console.log(response.data);
-        console.log(promiseResponse);
         return (promiseResponse);
       }, function error(response) {
         console.log("ERROR: " + response);

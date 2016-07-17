@@ -57,8 +57,9 @@
 
     function run($rootScope, $http, $location, $localStorage) {
       if ($localStorage.authenticatedUser) {
-        $http.defaults.headers.common.Authorization = $localStorage.authenticatedUser;
-        $http.defaults.headers.common.Token = $localStorage.token;
+        $http.defaults.headers.common.token = $localStorage.token;
+        $http.defaults.headers.common.username = $localStorage.authenticatedUser;
+        $http.defaults.headers.common.uuid = $localStorage.uuid;
       }
       // redirect to login page if not authenticated
       $rootScope.$on('$locationChangeStart', function(event, next, current) {

@@ -47,6 +47,7 @@ router.get('/timers/:oid', function(req, res, next) {
 
 /* GET all timers */
 router.get('/timers', function(req, res, next) {
+  console.log('[/timers] GET');
   var id = req.params.id;
   var something = app.dbo.collection('timers').find()
     .toArray(function(err, result) {
@@ -62,11 +63,15 @@ router.get('/timers', function(req, res, next) {
 
 /* POST add new timer */
 router.post('/timers', function(req, res) {
-  console.log('[/timers] POST ' + req.headers);
-  var auth = req.headers.authorization;
-  // currently auth is just the username, should be a jwt token or something else
+  console.log('[/timers] POST ');
+  var token = req.headers.token;
+  var username = req.headers.username;
+  var uuid = req.headers.uuid;
   var timer = req.body;
-
+  
+  timer.userIds = [
+    new ObjectId(uuid)
+  ];
   if (validateTimer(timer)) {
     app.dbo.collection('timers').insertOne(
       timer, 
@@ -110,15 +115,24 @@ router.put('/timers', function(req, res) {
     console.log('Update action requested');
     console.log(oid);
     console.log(timer.name);
-   
     app.dbo.collection('timers')
-    .updateOne({'_id':oid}, timer)
-    .then(function(succ) {
-      res.send('OK');
-    }, function error(result) {
-      console.log(result);
-      console.log('error updating object');
-      res.status(500).send({ error: 'Server could not find object to update'});
+    .findOne({_id: oid}, function (err, response) {
+      if (false) {
+        console.log("???????????????????????");
+        res.status(500).send("ERROR UPDATING TIMER");
+      }
+      else {
+        console.log("FOUND IT");
+        timer.userIds = response.userIds;
+        app.dbo.collection('timers')
+        .updateOne({'_id':oid}, timer)
+        .then(function(succ) {
+          res.send('OK');
+        }, function error(result) {
+          console.log(result);
+          console.log('error updating object');
+          res.status(500).send({ error: 'Server could not find object to update'});
+      })
     });
   }
   else {
