@@ -143,8 +143,12 @@ router.delete('/timers/:oid', function(req, res) {
       res.status(404).send({message: 'Timer ID could not be found'});
     }
     else {
-      console.log(results);
-      res.send({message: 'timer has been deleted', timerId: oid});
+      app.dbo.collection('users')
+      .update({_id: ObjectId(uuid)}, 
+        { $pull: {timers: { $in: [oid] } }})
+      .then(function(success) {
+        res.send({message: 'timer has been deleted for user', timerId: oid, userId: uuid});
+      });
     }
   }, function error(result) {
     console.log('error');
