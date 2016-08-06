@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var app = require('../app');
 var ObjectId = require('mongodb').ObjectId;
+var jwt = require('jsonwebtoken');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -12,10 +13,98 @@ router.get('/', function(req, res, next) {
   res.status(200).send(response);
 });
 
+router.post('/authenticate', function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+
+  if (username === undefined || username === '') {
+    res.status(400).send({message: 'Invalid username'});
+  }
+  else if (password === undefined || password === '') {
+    res.status(400).send({message: 'Invalid password'});
+  }
+  else {
+    app.dbo.collection('users').findOne({username: username}, function(err, result) {
+      // username exists, so check password
+      if (err === null && result !== null) {
+        if (password !== result.password) {
+          res.status(400).send({message: 'Invalid login credentials'});
+        }
+        else {
+          // user is valid
+          sendValidUserResponse(result);
+        }
+      }
+      // user doesn't exist so create new user with password
+      else if (err === null && result === null) {
+        app.dbo.collection('users').insertOne({username: username, password: password}, function (err, result) {
+          sendValidUserResponse(result.ops[0]);
+        });
+      }
+      // something went wrong... 
+      else {
+        res.status(500).send({message: 'Error! Something went wrong!!!', err, result});
+      }
+    });
+  }
+
+  function sendValidUserResponse(result) {
+    // if user is found and password is right create a token
+
+    // we don't want to pass the password back...
+    delete result.password;
+    
+    var token = jwt.sign(result, 'doneyetSecret', {
+      expiresIn: 60*60*24 // expires in 24 hours
+    });
+
+    res.status(200).send(
+      {
+        user: result.username,
+        token: token
+      }
+    );
+  }
+
+});
+
+/* AUTHENTICATION MIDDLEWARE */
+
+router.use(function(req, res, next) {
+  // we will only allow tokens from the HTTP header
+  var token = req.headers.token;
+
+  if (token) {
+    jwt.verify(token, 'doneyetSecret', function(err, verifiedToken) {
+      if (err) {
+        res.status(400).send({message: 'INVALID JWT TOKEN', error: err});
+      }
+      else {
+        req.verifiedToken = verifiedToken;
+        next();
+      }
+    });
+  }
+  else {
+    // no token present
+    res.status(400).send({message: 'No JWT token found in HTTP headers'});
+  }
+});
+
+/* PROTECTED ROUTES */
+
+/*
+ * Here we assume that the JWT token has been validated. The JWT token will contain our user information
+ * and other information that we need.  We can trust this information because the JWT has been signed
+ * by our secret
+ */
+
+
 /* GET a specific timer by _id */
 router.get('/timers/:oid', function(req, res, next) {
+  console.log('getting specific timer');
   try {
-    var uuid = new ObjectId(req.headers.uuid);
+    var uuid = new ObjectId(req.verifiedToken._id);
   }
   catch (error) {
     res.status(400).send({message: 'Invalid User ID Format', error: error.toString()});
@@ -49,8 +138,9 @@ router.get('/timers/:oid', function(req, res, next) {
 
 /* GET all timers */
 router.get('/timers', function(req, res, next) {
+  console.log('getting all timers');
   try {
-    var uuid = new ObjectId(req.headers.uuid);
+    var uuid = new ObjectId(req.verifiedToken._id);
   }
   catch (error) {
     res.status(400).send({message: 'Invalid User ID Format', error: error.toString()});
@@ -78,8 +168,9 @@ router.get('/timers', function(req, res, next) {
 
 /* POST add new timer */
 router.post('/timers', function(req, res) {
+  console.log('adding a new timer');
   try {
-    var uuid = new ObjectId(req.headers.uuid);
+    var uuid = new ObjectId(req.verifiedToken._id);
   }
   catch (error) {
     res.status(400).send({message: 'Invalid User ID Format', error: error.toString()});
@@ -122,8 +213,9 @@ router.post('/timers', function(req, res) {
 
 /* DELETE an existing timer */
 router.delete('/timers/:oid', function(req, res) {
+  console.log('deleting a timer');
   try {
-    var uuid = new ObjectId(req.headers.uuid);
+    var uuid = new ObjectId(req.verifiedToken._id);
   }
   catch (error) {
     res.status(400).send({message: 'Invalid User ID Format', error: error.toString()});
@@ -158,8 +250,9 @@ router.delete('/timers/:oid', function(req, res) {
 
 /* PUT an existing timer */
 router.put('/timers', function(req, res) {
+  console.log('updating a timer');
   try {
-    var uuid = new ObjectId(req.headers.uuid);
+    var uuid = new ObjectId(req.verifiedToken._id);
   }
   catch (error) {
     res.status(400).send({message: 'Invalid User ID Format', error: error.toString()});
@@ -207,45 +300,46 @@ router.put('/timers', function(req, res) {
   }
 });
 
-/* POST register/login user */
-router.post('/users', function(req, res) {
-  var user = req.body;
-  if (validateUser(user)) {
-    var username = user.username;
-
-    app.dbo.collection('users').findOne({username: username}, function(err, result) {
-      // user doesn't exist
-      if (err === null && result === null) {
-        app.dbo.collection('users').insertOne({username: username}, function (err, result) {
-          console.log("Created user: " + username);
-          var newUser = {
-            _id: result.insertedId,
-            username: username
-          };
-
-          res.status(200).send(
-            {
-              user: newUser,
-              token: 'NOT_IMPLEMENTED'
-            }
-          );
-        });
-      }
-      // user exists so don't create one
-      else {
-          res.status(200).send(
-            {
-              user: result,
-              token: 'NOT_IMPLEMENTED'
-            }
-          );
-      }
-    });
-  }
-  else {
-    res.status(400).send({ error: 'Invalid Timer Object', 'data':username });    
-  }
-});
+///* POST register/login user */
+//router.post('/users_ol', function(req, res) {
+//  var user = req.body;
+//  if (validateUser(user)) {
+//    var username = user.username;
+//
+//    app.dbo.collection('users').findOne({username: username}, function(err, result) {
+//      // user doesn't exist
+//      if (err === null && result === null) {
+//        app.dbo.collection('users').insertOne({username: username}, function (err, result) {
+//          console.log("Created user: " + username);
+//          var newUser = {
+//            _id: result.insertedId,
+//            username: username
+//          };
+//
+//          res.status(200).send(
+//            {
+//              user: newUser,
+//              token: 'NOT_IMPLEMENTED'
+//            }
+//          );
+//        });
+//      }
+//      // user exists so don't create one
+//      else {
+//        console.log('user exists: ', user);
+//          res.status(200).send(
+//            {
+//              user: result,
+//              token: 'NOT_IMPLEMENTED'
+//            }
+//          );
+//      }
+//    });
+//  }
+//  else {
+//    res.status(400).send({ error: 'Invalid Timer Object', 'data':username });    
+//  }
+//});
 
 /* GET all users */
 router.get('/users', function(req, res) {

@@ -20,8 +20,9 @@
 
     function login() {
       console.log("Login Controller: " + vm.email);
-      AuthenticationService.login(vm.email)
+      AuthenticationService.login(vm.email, vm.password)
         .then(function success(response) {
+
           console.log('Login ctrl auth %o', response);
           if (response) {
             $location.path('/');

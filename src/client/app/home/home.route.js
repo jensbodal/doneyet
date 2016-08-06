@@ -45,6 +45,16 @@
               controllerAs: 'vm'
             }
           }
+        })
+        .state('register', {
+          url: '/register',
+          views: {
+            'doneyetMain': {
+              templateUrl: 'app/login/register.template.html',
+              controller: 'LoginController',
+              controllerAs: 'vm'
+            }
+          }
         });
     }
 
@@ -56,10 +66,9 @@
     ];
 
     function run($rootScope, $http, $location, $localStorage) {
-      if ($localStorage.authenticatedUser) {
+      if ($localStorage.token) {
         $http.defaults.headers.common.token = $localStorage.token;
         $http.defaults.headers.common.username = $localStorage.authenticatedUser;
-        $http.defaults.headers.common.uuid = $localStorage.uuid;
       }
       // redirect to login page if not authenticated
       $rootScope.$on('$locationChangeStart', function(event, next, current) {
@@ -67,7 +76,7 @@
         var nonAuthPages = ['/login', '/register'];
 
         var restrictedPages = nonAuthPages.indexOf($location.path()) === -1;
-        if (restrictedPages && !$localStorage.authenticatedUser) {
+        if (restrictedPages && !$localStorage.token) {
           $location.path('/login');
         }
       });
