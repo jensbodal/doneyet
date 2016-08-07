@@ -46,7 +46,9 @@
         // indicate successful login
         return (promiseResponse);
       }, function error(response) {
-        console.log("ERROR: " + response);
+        service.loggedIn = false;
+        console.log("ERROR: %o", response);
+        delete $localStorage.token;
         return response;
       });
 
@@ -57,6 +59,7 @@
       // remove user from local storage and clear http auth header
       service.loggedIn = false;
       delete $localStorage.authenticatedUser;
+      delete $localStorage.token;
       $http.defaults.headers.common.Authorization = '';
     }
   }

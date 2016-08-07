@@ -1,3 +1,6 @@
+var config = require('../config.json');
+var secret = config.secret;
+var crypto = require('crypto');
 var express = require('express');
 var router = express.Router();
 var app = require('../app');
@@ -25,9 +28,14 @@ router.post('/authenticate', function(req, res) {
   }
   else {
     app.dbo.collection('users').findOne({username: username}, function(err, result) {
+      
       // username exists, so check password
       if (err === null && result !== null) {
-        if (password !== result.password) {
+        
+        // first get passwordHash
+        var passwordHash = hash(password, result.password.salt).passwordHash;
+        
+        if (passwordHash !== result.password.passwordHash) {
           res.status(400).send({message: 'Invalid login credentials'});
         }
         else {
@@ -37,6 +45,8 @@ router.post('/authenticate', function(req, res) {
       }
       // user doesn't exist so create new user with password
       else if (err === null && result === null) {
+        // hash password and store as .salt and .passwordHash
+        password = hash(password, generateSalt());
         app.dbo.collection('users').insertOne({username: username, password: password}, function (err, result) {
           sendValidUserResponse(result.ops[0]);
         });
@@ -54,7 +64,7 @@ router.post('/authenticate', function(req, res) {
     // we don't want to pass the password back...
     delete result.password;
     
-    var token = jwt.sign(result, 'doneyetSecret', {
+    var token = jwt.sign(result, secret, {
       expiresIn: 60*60*24 // expires in 24 hours
     });
 
@@ -75,7 +85,7 @@ router.use(function(req, res, next) {
   var token = req.headers.token;
 
   if (token) {
-    jwt.verify(token, 'doneyetSecret', function(err, verifiedToken) {
+    jwt.verify(token, secret, function(err, verifiedToken) {
       if (err) {
         res.status(400).send({message: 'INVALID JWT TOKEN', error: err});
       }
@@ -300,47 +310,6 @@ router.put('/timers', function(req, res) {
   }
 });
 
-///* POST register/login user */
-//router.post('/users_ol', function(req, res) {
-//  var user = req.body;
-//  if (validateUser(user)) {
-//    var username = user.username;
-//
-//    app.dbo.collection('users').findOne({username: username}, function(err, result) {
-//      // user doesn't exist
-//      if (err === null && result === null) {
-//        app.dbo.collection('users').insertOne({username: username}, function (err, result) {
-//          console.log("Created user: " + username);
-//          var newUser = {
-//            _id: result.insertedId,
-//            username: username
-//          };
-//
-//          res.status(200).send(
-//            {
-//              user: newUser,
-//              token: 'NOT_IMPLEMENTED'
-//            }
-//          );
-//        });
-//      }
-//      // user exists so don't create one
-//      else {
-//        console.log('user exists: ', user);
-//          res.status(200).send(
-//            {
-//              user: result,
-//              token: 'NOT_IMPLEMENTED'
-//            }
-//          );
-//      }
-//    });
-//  }
-//  else {
-//    res.status(400).send({ error: 'Invalid Timer Object', 'data':username });    
-//  }
-//});
-
 /* GET all users */
 router.get('/users', function(req, res) {
   app.dbo.collection('users').find().toArray()
@@ -375,7 +344,25 @@ router.get('/users/:oid', function(req, res) {
   });
 });
 
+function generateSalt() {
+  var length = 512;
+  return crypto.randomBytes(Math.ceil(length/2))
+    .toString('hex')
+    .slice(0, length);
+}
+
 // internal functions
+function hash(password, salt) {
+
+  var hash = crypto.createHmac('sha512', salt);
+  hash.update(password);
+  var value = hash.digest('hex');
+  return {
+    salt: salt,
+    passwordHash: value
+  };
+}
+
 function validateTimer(timer) {
   var isValid = false;
   if (timer.name) {
