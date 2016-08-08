@@ -344,6 +344,51 @@ router.get('/users/:oid', function(req, res) {
   });
 });
 
+router.post('/user/profile-picture', function(req, res) {
+  try {
+    var uuid = new ObjectId(req.verifiedToken._id);
+  }
+  catch (error) {
+    res.status(400).send({message: 'Invalid User ID Format', error: error.toString()});
+  }
+  
+  if (!req.body.profilePicture) {
+    req.status(400).send({message: 'profile picture URL missing'});
+  }
+
+  app.dbo.collection('users')
+    .updateOne({'_id': uuid}, {$set: {profilePicture: req.body.profilePicture}})
+    .then(function(succ) {
+      console.log('success updating profile picture');
+      res.status(200).send({message: 'Profile Picture Set', URL: req.body.profilePicture});
+    }, function(error) {
+      console.log(error);
+      res.status(500).send({message: 'error something post picture'});
+    });
+});
+
+router.get('/user/profile-picture', function(req, res) {
+  try {
+    var uuid = new ObjectId(req.verifiedToken._id);
+  }
+  catch (error) {
+    res.status(400).send({message: 'Invalid User ID Format', error: error.toString()});
+  }
+
+  app.dbo.collection('users').findOne({_id: uuid})
+  .then(function(results) {
+    if (results == null) {
+      res.status(404).send({message: 'User not found'});
+    }
+    else {
+      console.log(results);
+      res.status(200).send(results);
+    }
+  }, function(error) {
+    res.status(500).send({error: error});
+  });
+});
+
 function generateSalt() {
   var length = 512;
   return crypto.randomBytes(Math.ceil(length/2))
